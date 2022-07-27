@@ -42,6 +42,8 @@ Future<String?> prompt(
   bool barrierDismissible = false,
   TextCapitalization textCapitalization = TextCapitalization.none,
   TextAlign textAlign = TextAlign.start,
+  List<TextInputFormatter>? inputFormatters,
+  bool isTextSelected = false,
 }) {
   return showDialog(
     context: context,
