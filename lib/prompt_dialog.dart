@@ -1,6 +1,7 @@
 library prompt_dialog;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// The `title` argument is used to title of alert dialog.\
 /// The `textOK` argument is used to text for 'OK' Button of alert dialog.\
@@ -45,6 +46,12 @@ Future<String?> prompt(
   List<TextInputFormatter>? inputFormatters,
   bool isTextSelected = false,
 }) {
+  TextEditingController textController = TextEditingController();
+  textController.text = initialValue ?? "";
+  FocusNode textNode = FocusNode();
+  if(isTextSelected)
+    textNode.addListener(() =>
+    textController.selection = TextSelection(baseOffset: 0, extentOffset: textController.value.text.length));
   return showDialog(
     context: context,
     barrierDismissible: barrierDismissible,
@@ -66,7 +73,7 @@ Future<String?> prompt(
         obscuringCharacter: obscuringCharacter,
         showPasswordIcon: showPasswordIcon,
         textCapitalization: textCapitalization,
-        textAlign: textAlign,
+        textAlign: textAlign, inputFormatters:inputFormatters ?? [],isTextSelected: isTextSelected,
       );
     },
   );
@@ -91,7 +98,7 @@ class _PromptDialog extends StatefulWidget {
     required this.obscuringCharacter,
     required this.showPasswordIcon,
     required this.textCapitalization,
-    required this.textAlign,
+    required this.textAlign,required this.inputFormatters, required this.isTextSelected
   }) : super(key: key);
 
   final Widget? title;
@@ -111,6 +118,8 @@ class _PromptDialog extends StatefulWidget {
   final bool showPasswordIcon;
   final TextCapitalization textCapitalization;
   final TextAlign textAlign;
+  final List<TextInputFormatter>? inputFormatters;
+  final  bool isTextSelected ;
 
   @override
   __PromptDialogState createState() => __PromptDialogState();
@@ -176,6 +185,8 @@ class __PromptDialogState extends State<_PromptDialog> {
             obscureText: stateObscureText,
             obscuringCharacter: widget.obscuringCharacter,
             textCapitalization: widget.textCapitalization,
+            inputFormatters: widget.inputFormatters,
+
             onEditingComplete: () {
               if (_formKey.currentState!.validate()) {
                 Navigator.pop(context, value);
